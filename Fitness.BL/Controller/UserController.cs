@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -20,9 +21,11 @@ namespace Fitness.BL.Controller
         /// </summary>
         /// <param name="user"></param>
         /// <exception cref="ArgumentNullException"></exception>
-        public UserController(User user)
+        public UserController(string userName, string genderName, DateTime birdthday, double weight, double height)
         {
-            User = user ?? throw new ArgumentNullException("Пользователь не  может быть равен NULL", nameof(user));
+            ///TODO: Должна быть проверка.
+            var gender = new Gender(genderName);
+            User = new User(userName, gender, birdthday, weight, height);
         }
         /// <summary>
         /// Сохранить данные пользователя.
@@ -40,13 +43,19 @@ namespace Fitness.BL.Controller
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FileLoadException"> Пользователь приложения. </exception>
-        public User Load()
+        public UserController()
         {
             var formatter = new BinaryFormatter();
             using (var fs = new FileStream("users.dat", FileMode.OpenOrCreate))
             {
-                return formatter.Deserialize(fs) as User;
+                if(formatter.Deserialize(fs) is User user)
+                {
+                    User = user;
+                } 
+
+                //TODO: Что делать если пользователя не прочетали
             }
         }
+
     }
 }
